@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Demo Game Window</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background:#f5f5f7; margin:0; }
+    .wrapper{
+      width:640px; margin:40px auto; padding:24px;
+      background:#fff; border:1px solid #ccc; border-radius:10px;
+      box-shadow:0 4px 12px rgba(0,0,0,.08);
+    }
+    .controls{ display:flex; flex-direction:column; gap:18px; }
+    button{ padding:6px 12px; font-size:15px; cursor:pointer; }
+    .carousel{ display:flex; align-items:center; gap:8px; }
+    .carousel span{ min-width:32px; text-align:center; font-weight:600; }
+    .field {display:flex;}
+    .iframe-box{ margin-top:24px; height:600px; width:600px;border:1px solid #aaa; }
+    .gameFrame{ width:100%; height:100%; border:none; }
+    .currency[data-cur="ton"]::after{ content: ' TON';}
+  </style>
+    <!-- ⬇ подключаем шину первым -->
+    <script src="game/godot_api.js"></script>
+    <script type="module">
+      import { loadConfig } from "./scripts/config_loader.js";
+  
+      // делаем конфиг глобальным, чтобы main.js и другие могли сразу брать
+      loadConfig().then(cfg => {
+        window.tonROLL.PLINKO.CONFIG = cfg;
+        window.dispatchEvent(new CustomEvent('config-ready', { detail: cfg }));
+        console.log("[config] loaded", cfg);
+      }).catch(console.error);
+    </script>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="playerScoreBox">
+      <label>Очки: </label>
+      <span id="playerScoreValue">0</span>
+      <span id="playerScoreCurrency"> TON</span>
+    </div>
+
+    <div class="iframe-box">
+      <!-- 2 — готовая HTML-сборка Godot -->
+      <iframe class="gameFrame" id="gameFrame"
+        src="game/game.html">
+      </iframe>
+    </div>
+
+    <section id="ui">
+      <button id="startBtn">Старт игры <span class="currency" data-cur="ton" id = "betCost">0</span></button>
+
+      <div class="carousel" id="chips">
+        <label>Количество фишек:</label>
+        <button class="prev"  data-target="chips_text">‹</button>
+        <span id="chips_text">0</span>
+        <button class="next"  data-target="chips_text">›</button>
+      </div>
+
+      <div class="carousel" id="rows">
+        <label>Количество рядов:</label>
+        <button class="prev"  data-target="rows_text">‹</button>
+        <span id="rows_text">0</span>
+        <button class="next"  data-target="rows_text">›</button>
+      </div>
+  
+      <!-- Поле ввода с подписью -->
+      <div class="field">
+        <label for="betValue">Ставка:</label>
+        <div class="currency" data-cur="ton">
+          <input id="betValue" type="number" placeholder="Размер ставки">
+        </div>
+        <div class="autoBet">
+          <input id="autoBet" type="number" placeholder="Автоставка">
+        </div>
+      </div>
+  
+      <!-- Выпадающее меню + кнопки -/+ -->
+      <div class="fieldQuickBet">
+        <button id="betMinus" type="button">−</button>
+        <label for="betSelect">Быстрая ставка:</label>
+        <select id="betSelect">
+        </select>
+        <button id="betPlus" type="button">+</button>
+      </div>
+  
+      <!-- Три флажка -->
+      <fieldset class="fieldChecks" id="modifierChecks">
+        <legend>Модификаторы</legend>
+      </fieldset>
+    </section>
+  </div>
+  <!-- ⬇ ваш интерфейс -->
+  <script defer type="module" src="index.js"></script>
+</body>
+</html>

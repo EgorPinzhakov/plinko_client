@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_Слой_1" data-name="Слой 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20.7439 20.7439">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #c13616;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: .7px;
+      }
+
+      .cls-2 {
+        fill: #f9b450;
+      }
+
+      .cls-3 {
+        fill: url(#_Безымянный_градиент_160);
+        stroke: url(#_Безымянный_градиент_195);
+      }
+
+      .cls-3, .cls-4 {
+        stroke-miterlimit: 10;
+      }
+
+      .cls-4 {
+        fill: url(#_Безымянный_градиент_164);
+        stroke: url(#_Безымянный_градиент_197);
+      }
+
+      .cls-5 {
+        fill: #fee690;
+      }
+
+      .cls-6 {
+        fill: #fc9500;
+      }
+
+      .cls-7 {
+        fill: #fff0c2;
+      }
+
+      .cls-8 {
+        fill: #c14c23;
+      }
+    </style>
+    <radialGradient id="_Безымянный_градиент_164" data-name="Безымянный градиент 164" cx="10.372" cy="10.372" fx="10.372" fy="10.372" r="9.872" gradientUnits="userSpaceOnUse">
+      <stop offset=".766" stop-color="#ff151b"/>
+      <stop offset=".7714" stop-color="#f81518" stop-opacity=".9382"/>
+      <stop offset=".7894" stop-color="#e51611" stop-opacity=".7462"/>
+      <stop offset=".807" stop-color="#d6160b" stop-opacity=".5867"/>
+      <stop offset=".8238" stop-color="#c91706" stop-opacity=".4625"/>
+      <stop offset=".8395" stop-color="#c11702" stop-opacity=".3735"/>
+      <stop offset=".8538" stop-color="#bb1700" stop-opacity=".3197"/>
+      <stop offset=".8652" stop-color="#ba1800" stop-opacity=".301"/>
+      <stop offset=".883" stop-color="#ba140a" stop-opacity=".2358"/>
+      <stop offset=".9265" stop-color="#ba0e1e" stop-opacity=".106"/>
+      <stop offset=".9666" stop-color="#ba0a2a" stop-opacity=".0272"/>
+      <stop offset="1" stop-color="#ba092f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="_Безымянный_градиент_197" data-name="Безымянный градиент 197" cx="10.372" cy="10.372" fx="10.372" fy="10.372" r="10.372" gradientUnits="userSpaceOnUse">
+      <stop offset=".766" stop-color="#ff151b"/>
+      <stop offset=".7696" stop-color="#f81518" stop-opacity=".9382"/>
+      <stop offset=".7816" stop-color="#e51611" stop-opacity=".7462"/>
+      <stop offset=".7933" stop-color="#d6160b" stop-opacity=".5867"/>
+      <stop offset=".8045" stop-color="#c91706" stop-opacity=".4625"/>
+      <stop offset=".8149" stop-color="#c11702" stop-opacity=".3735"/>
+      <stop offset=".8244" stop-color="#bb1700" stop-opacity=".3197"/>
+      <stop offset=".832" stop-color="#ba1800" stop-opacity=".301"/>
+      <stop offset=".8453" stop-color="#ba120f" stop-opacity=".2"/>
+      <stop offset=".8628" stop-color="#ba0e1d" stop-opacity=".1101"/>
+      <stop offset=".8846" stop-color="#ba0b27" stop-opacity=".0466"/>
+      <stop offset=".9151" stop-color="#ba092d" stop-opacity=".0101"/>
+      <stop offset="1" stop-color="#ba092f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="_Безымянный_градиент_160" data-name="Безымянный градиент 160" cx="10.372" cy="10.372" fx="10.372" fy="10.372" r="9.872" gradientUnits="userSpaceOnUse">
+      <stop offset=".766" stop-color="#fc9500"/>
+      <stop offset=".7915" stop-color="#e87100" stop-opacity=".7987"/>
+      <stop offset=".8386" stop-color="#c73100" stop-opacity=".4428"/>
+      <stop offset=".8597" stop-color="#ba1800" stop-opacity=".301"/>
+      <stop offset=".8782" stop-color="#ba140a" stop-opacity=".2358"/>
+      <stop offset=".9234" stop-color="#ba0e1e" stop-opacity=".106"/>
+      <stop offset=".9652" stop-color="#ba0a2a" stop-opacity=".0272"/>
+      <stop offset="1" stop-color="#ba092f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="_Безымянный_градиент_195" data-name="Безымянный градиент 195" cx="10.372" cy="10.372" fx="10.372" fy="10.372" r="10.372" gradientUnits="userSpaceOnUse">
+      <stop offset=".766" stop-color="#ff151b"/>
+      <stop offset=".7714" stop-color="#f81518" stop-opacity=".9382"/>
+      <stop offset=".7894" stop-color="#e51611" stop-opacity=".7462"/>
+      <stop offset=".807" stop-color="#d6160b" stop-opacity=".5867"/>
+      <stop offset=".8238" stop-color="#c91706" stop-opacity=".4625"/>
+      <stop offset=".8395" stop-color="#c11702" stop-opacity=".3735"/>
+      <stop offset=".8538" stop-color="#bb1700" stop-opacity=".3197"/>
+      <stop offset=".8652" stop-color="#ba1800" stop-opacity=".301"/>
+      <stop offset=".8758" stop-color="#ba120f" stop-opacity=".2"/>
+      <stop offset=".8899" stop-color="#ba0e1d" stop-opacity=".1101"/>
+      <stop offset=".9074" stop-color="#ba0b27" stop-opacity=".0466"/>
+      <stop offset=".9319" stop-color="#ba092d" stop-opacity=".0101"/>
+      <stop offset="1" stop-color="#ba092f" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle class="cls-4" cx="10.372" cy="10.372" r="9.872"/>
+  <circle class="cls-3" cx="10.372" cy="10.372" r="9.872"/>
+  <circle class="cls-8" cx="10.372" cy="10.372" r="7.5616"/>
+  <path class="cls-6" d="M16.4436,6.3003c.2849.4334,1.2258,1.8426.5327,2.0905-.8836.0735-1.5623.6823-2.1423,1.2859-6.3904,7.6236-7.3904,2.6236-10.171,3.0132-1.2194-.3896-3.2194-6.3896,3.7806-9.3896,3-1,7,1,8,3Z"/>
+  <path class="cls-6" d="M17.2032,11.7654c.3824.3815-.4046,2.1747-.7596,2.5349-1.9586,2.9045-3.693,2.9207-4,3-1.1673.12-1.8309-.0277-1.3839-.7655,1.3839-.2345,2.6914-2.3729,2.8961-2.6833.1464.0521,1.4878-2.5512,3.2474-2.0861Z"/>
+  <path class="cls-2" d="M8.8447,3.9779c4.5988-.6776,5.5556,2.1744,5.4595,3.7171-.2959,4.7505-9.3225,6.5377-9.2928,1.2778.0054-.9601.2323-1.6262.2323-1.6262.9004-1.851,1.676-2.5196,3.601-3.3686Z"/>
+  <path class="cls-5" d="M4.663,12.6899c.0871.2094,1.2101,2.2956,2.2167,3.0686.7918.6079,2.5403,1.6065,3.5639,1.5419-2,1-8-2-7-7,.6032.4672.9155,1.6585,1.2194,2.3896Z"/>
+  <path class="cls-7" d="M14.7689,5.2557c.2968.4118,1.6747,3.0447-2.1489,2.4395-.7917.0227-2.3264.6838-3.1764.6052-1.3179-.1218-2.1297-1.2598-1.8696-2.8641.9508-3.2841,5.8696-2.1359,7.1949-.1806Z"/>
+  <path class="cls-7" d="M5.1538,7.2213c.7326-.5979,1.4576-.1825,1.5489.1538.2023,1.7914-1.4332,2.2212-1.8632,1.7279-.4269-.477-.2821-1.3241.3143-1.8816Z"/>
+  <circle class="cls-1" cx="10.4708" cy="10.3447" r="7.4203"/>
+</svg>
