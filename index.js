@@ -75,7 +75,14 @@ function initUI(cfg) {
   document.getElementById('startBtn')
   .addEventListener('click', () => {
     console.log('Клик по кнопке «Старт игры»');
-    window.tonROLL.PLINKO.emit(PlinkoEvents.GAME_START, play_game())
+    var state = window.tonROLL.PLINKO.loadState()
+    var current_score = state.score
+    current_score -= state.bet_cost * cfg.chips[state.chips]
+    console.log(current_score)
+    state.score = current_score
+    document.getElementById('playerScoreValue').textContent = parseScore(current_score)
+    window.tonROLL.PLINKO.saveState(state)
+    window.tonROLL.PLINKO.emit(PlinkoEvents.GAME_START, play_game()) //TODO: вместо play_game() данные о игровой сессии полученные с сервера
   });
 
   // обработка каруселей выбора кол-ва шариков
@@ -91,7 +98,7 @@ function initUI(cfg) {
 
     document.getElementById(id).textContent = config.chips[_chips_key_arr[v]];
     console.log(`Значение ${id} изменено на ${config.chips[_chips_key_arr[v]]}`);
-    window.tonROLL.PLINKO.emit(PlinkoEvents.CHIP_UPDATE, config.chips[_chips_key_arr[v]])
+    window.tonROLL.PLINKO.emit(PlinkoEvents.CHIP_UPDATE, _chips_key_arr[v])
   }));
 
   // обработка каруселей выбора рядов
@@ -108,7 +115,7 @@ function initUI(cfg) {
 
     document.getElementById(id).textContent = config.rows[_rows_key_arr[v]].amount;
     console.log(`Значение ${id} изменено на ${_rows_key_arr[v]}`);
-    window.tonROLL.PLINKO.emit(PlinkoEvents.ROWS_UPDATE, config.rows[_rows_key_arr[v]])
+    window.tonROLL.PLINKO.emit(PlinkoEvents.ROWS_UPDATE, _rows_key_arr[v])
   }));
 
 
@@ -161,53 +168,72 @@ function initUI(cfg) {
 
     cb.addEventListener('change', () => {
       console.log(`[UI] ${id} =`, cb.checked);
-      var new_mod = {}
-      new_mod[id] = config.modifiers[id]
-      console.log(new_mod)
-      bus.emit(PlinkoEvents.MODIFIERS_UPDATE, new_mod);
+      bus.emit(PlinkoEvents.MODIFIERS_UPDATE, id);
     });
   });
-}
 
+    const btn   = document.getElementById('riskBtn');
+  const icons = Array.from(btn.querySelectorAll('.risk-icon'));
+  let level = 0; // 0..3 (0 = ничего не горит)
+
+  function render() {
+    icons.forEach((img, i) => img.classList.toggle('on', i < level));
+  }
+
+  function nextLevel() {
+    level = (level % 3) + 1; // 1→2→3→1...
+    render();
+    console.log(Object.values(cfg.risk)[0])
+    bus.emit(PlinkoEvents.RISK_FACTOR_UPDATE, cfg.risk[level-1]);
+    console.log('Risk level:', level);
+  }
+
+  btn.addEventListener('click', nextLevel);
+
+  render(); // начальная отрисовка
+}
 
 function setPlayerState(cfg){
   window.tonROLL.PLINKO.saveState(
       {
-          score: cfg.default_score,
+          score: 100000,
           currency: "TON",
           bet: 100,
           bet_cost: 100,
-          rows: cfg.rows.default,
-          chips: cfg.chips.default,
+          rows: Object.keys(cfg.rows)[0],
+          chips: Object.keys(cfg.chips)[0],
           modifiers: {},
-          risk_factor: cfg.risk_factor[0]
+          risk: cfg.risk[0]
       }
   );
-  window.tonROLL.PLINKO.on(PlinkoEvents.PLAYER_STATE_UPDATE, updatePlayerState)
-  
+
   var state =  window.tonROLL.PLINKO.loadState()
-  
+
   document.getElementById('playerScoreValue').textContent = parseScore(state.score)
-  document.getElementById('chips_text').textContent = state.chips
-  document.getElementById('rows_text').textContent = state.rows.amount
-  document.getElementById("betValue").textContent = state.bet
-  document.getElementById("betCost").textContent = state.bet_cost
+  document.getElementById('chips_text').textContent = cfg.chips[state.chips]
+  document.getElementById('rows_text').textContent = cfg.rows[state.rows].amount
+  document.getElementById("betValue").textContent = parseScore(state.bet)
+  document.getElementById("betCost").textContent = parseScore(state.bet_cost)
   document.querySelectorAll('.currency').forEach(el => el.dataset.cur = 'ton');
 
   console.log("State saved")
 }
 
 function initGodotEvents(){
+  window.tonROLL.PLINKO.on(PlinkoEvents.PLAYER_STATE_UPDATE, updatePlayerState)
   window.tonROLL.PLINKO.on(PlinkoEvents.CHIP_SCORED, updateScore)
   window.tonROLL.PLINKO.on(PlinkoEvents.GODOT_READY, godotReady)
 }
 
 function updateScore(event_type, data) {
+  var chip_data = JSON.parse(data)
   var player_state = window.tonROLL.PLINKO.loadState()
   var current_score = player_state.score
-  current_score += data.result
-  document.getElementById('playerScoreValue').textContent = parseScore(current_score)
+  current_score += chip_data.result
   player_state.score = current_score
+  console.log(chip_data.result)
+  console.log(player_state.score)
+  document.getElementById('playerScoreValue').textContent = parseScore(current_score)
   window.tonROLL.PLINKO.saveState(player_state)
 }
 
@@ -216,28 +242,36 @@ function godotReady(event_type, data){
 }
 
 function updatePlayerState(event_type, data) {
-  window.tonROLL.PLINKO.saveState(JSON.parse(data));
+
+  var state = JSON.parse(data)
+
+  state.bet_cost = state.bet
+  for (var key in state.modifiers){
+    state.bet_cost += state.bet * state.modifiers[key].cost
+  }
+  document.getElementById("betValue").textContent = parseScore(state.bet)
+  document.getElementById("betCost").textContent = parseScore(state.bet_cost)
+
+  window.tonROLL.PLINKO.saveState(state);
   console.log("State updated")
 }
 
 function play_game(){
-    const game_data = window.tonROLL.PLINKO.loadState();
+    const player_data = window.tonROLL.PLINKO.loadState();
+    var game_data = {}
+    player_data.winnings = 0
     game_data.winnings = 0        
     console.log("Calculating chips")
-    var _cdf = plinko_math.buildCDF(game_data.rows.amount)
-    game_data.bin_multipliers = []
-    for (var i = 0; i <= game_data.rows.amount; i++) {
-      game_data.bin_multipliers.push(plinko_math.getBinMultiplier(i, game_data.rows.weights, game_data.risk_factor, _cdf, cfg.RTP))
-    }
-
+    var _cdf = plinko_math.buildCDF(cfg.rows[player_data.rows].amount)
     var chip_data = new Array()
     var bonus_chips = new Array()
-    for (let i = 0; i < game_data.chips; i++) {
-        calculate_chip(chip_data, game_data, _cdf, bonus_chips)
+    for (let i = 0; i < cfg.chips[player_data.chips]; i++) {
+        calculate_chip(chip_data, player_data, _cdf, bonus_chips)
     }
     
     game_data.chip_data = chip_data
     game_data.bonus_chips = bonus_chips
+    game_data.winnings = player_data.winnings
     // ── 4. Отправляем JSON‑ответ ───────────────────────────
     console.log("Game Started")
     console.log(game_data)
@@ -247,21 +281,24 @@ function play_game(){
 
 
 
-function calculate_chip(chip_arr, game_data, _cdf, bonus_chips){
+function calculate_chip(chip_arr, player_data, _cdf, bonus_chips){
 
   var chip = {
     target_bin: plinko_math.uniformToPocket(_cdf),
-    chip_value: game_data.bet,
-    chip_cost: game_data.bet_cost,
+    chip_value: player_data.bet,
+    chip_cost: player_data.bet_cost,
+    chip_result: 0,
     multiplier: [1],
     way: []
   }
   
   var roll_rarity = Math.random()
-  var multiplier_chance = 0.05
-  if (game_data.modifiers.multiplier != null) {
-    multiplier_chance += game_data.modifiers.multiplier.chance
+  var multiplier_chance = 0
+
+  if (player_data.modifiers.multiplier != null) {
+    multiplier_chance += 0.2
   }
+  console.log(multiplier_chance)
 
   if (roll_rarity < multiplier_chance){
     chip.multiplier[0] *= 2
@@ -269,12 +306,12 @@ function calculate_chip(chip_arr, game_data, _cdf, bonus_chips){
 
   var current_col = 1
 
-  for (var i = 0; i < game_data.rows.amount; i++) {
+  for (var i = 0; i < cfg.rows[player_data.rows].amount; i++) {
     chip.way.push(current_col)
     var jump_side = Math.floor(Math.random() * 10)%2
     current_col += jump_side
-    if (game_data.modifiers.zone != null && i != parseInt(game_data.rows.amount))  {
-      if (game_data.modifiers.zone.positions[i][current_col-1] == 2){
+    if (player_data.modifiers.zone != null && i != parseInt(cfg.rows[player_data.rows].amount))  {
+      if (player_data.pin_tree[i][current_col-1] == 2){
         chip.multiplier.push(chip.multiplier[chip.multiplier.length-1] * 2)
       }
     }
@@ -282,18 +319,20 @@ function calculate_chip(chip_arr, game_data, _cdf, bonus_chips){
 
   chip.target_bin = current_col - 1
 
-  game_data.winnings += chip.chip_value * chip.multiplier * game_data.bin_multipliers[chip.target_bin] - chip.chip_cost
+  chip.chip_result = chip.chip_value * chip.multiplier[chip.multiplier.length-1] * cfg.rows[player_data.rows][player_data.risk].bin_multipliers[chip.target_bin]
+
+  player_data.winnings += (parseInt(chip.chip_result) - chip.chip_cost)
 
   chip_arr.push(chip)
 
-  count_double(bonus_chips, game_data, chip.target_bin, _cdf)
+  count_double(bonus_chips, player_data, chip.target_bin, _cdf)
 }
 
 
-function count_double(bonus_chips, game_data, index, _cdf){
-  if (game_data.modifiers.double_chip != null && (index == (game_data.modifiers.double_chip.left ?? -1) || index == (game_data.modifiers.double_chip.right ?? -1))) {
-    var bonus_data = game_data
-    bonus_data.chip_cost = 0
+function count_double(bonus_chips, player_data, index, _cdf){
+  if (player_data.modifiers.double_chip != null && (index == (cfg.modifiers.double_chip.positions[player_data.rows][0] ?? -1) || index == (cfg.modifiers.double_chip.positions[player_data.rows][1] ?? -1))) {
+    var bonus_data = player_data
+    bonus_data.bet_cost = 0
     calculate_chip(bonus_chips, bonus_data, _cdf, bonus_chips)
   }
 }

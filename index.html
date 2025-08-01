@@ -19,17 +19,42 @@
     .iframe-box{ margin-top:24px; height:600px; width:600px;border:1px solid #aaa; }
     .gameFrame{ width:100%; height:100%; border:none; }
     .currency[data-cur="ton"]::after{ content: ' TON';}
+    .risk-btn{
+      display:inline-flex;
+      gap:6px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .risk-icon-small{
+      width:16px; height:16px;
+      transition:opacity .15s, filter .15s;
+      opacity:.35; filter:grayscale(1);
+    }
+    .risk-icon{
+      width:32px; height:32px;
+      transition:opacity .15s, filter .15s;
+      opacity:.35; filter:grayscale(1);
+    }
+    .risk-icon-big{
+      width:64px; height:64px;
+      transition:opacity .15s, filter .15s;
+      opacity:.35; filter:grayscale(1);
+    }
+    .risk-icon.on{
+      opacity:1; filter:none;
+    }
   </style>
     <!-- ⬇ подключаем шину первым -->
     <script src="game/godot_api.js"></script>
     <script type="module">
-      import { loadConfig } from "./scripts/config_loader.js";
+      import { loadConfig, playerConfig } from "./scripts/config_loader.js";
   
       // делаем конфиг глобальным, чтобы main.js и другие могли сразу брать
       loadConfig().then(cfg => {
-        window.tonROLL.PLINKO.CONFIG = cfg;
-        window.dispatchEvent(new CustomEvent('config-ready', { detail: cfg }));
-        console.log("[config] loaded", cfg);
+        var pl_cfg = playerConfig(cfg)
+        window.tonROLL.PLINKO.CONFIG = pl_cfg;
+        window.dispatchEvent(new CustomEvent('config-ready', { detail: pl_cfg }));
+        console.log("[config] loaded", pl_cfg);
       }).catch(console.error);
     </script>
 </head>
@@ -84,7 +109,14 @@
         </select>
         <button id="betPlus" type="button">+</button>
       </div>
-  
+      
+      <!-- Кнопка с тремя картинками -->
+      <div class="risk-btn" id="riskBtn" role="button" tabindex="0" aria-label="Выбор риск-фактора">
+        <img src="images/risk_fire.png" alt="Риск 1" class="risk-icon">
+        <img src="images/risk_fire.png" alt="Риск 2" class="risk-icon">
+        <img src="images/risk_fire.png" alt="Риск 3" class="risk-icon">
+      </div>
+
       <!-- Три флажка -->
       <fieldset class="fieldChecks" id="modifierChecks">
         <legend>Модификаторы</legend>

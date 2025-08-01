@@ -64,10 +64,11 @@ export function uniformToPocket(cdf) {
   return lo;                        // карман k
 }
 
-export function getBinMultiplier(bin_index, weights, risk_factor, cdf, rtp){
+export function getMultipliers(weights, risk_factor, cdf, rtp){
   var prob_summ = 0
-
   var prob_table = []
+  var mkr_arr = []
+
 
   for (var i = 0; i < cdf.length - 1; i++) {
     prob_table.push(Math.min(cdf[i], 1 - cdf[i]))
@@ -77,7 +78,12 @@ export function getBinMultiplier(bin_index, weights, risk_factor, cdf, rtp){
     prob_summ += prob_table[k] * Math.pow(weights[k], risk_factor)
   }
 
-  var wkr = Math.pow(weights[bin_index], risk_factor)
+  for (var k = 0; k < weights.length; k++){
+    var wkr = Math.pow(weights[k], risk_factor)
+    var mkr = (rtp * wkr) / prob_summ
+    if (mkr < 3.0) mkr_arr.push(Math.round((mkr * 10)) / 10); 
+    else mkr_arr.push(Math.round(mkr))
+  }
 
-  return Math.round(((rtp * wkr) / prob_summ) * 10) / 10
+  return mkr_arr
 }

@@ -47,6 +47,20 @@
 	
 		message: function(){
 			console.log("Message")
+		},
+
+		getImages: async function () {
+			try{
+				const res = await fetch("http://localhost:3000/img", { mode: 'cors' });
+				const mime = res.headers.get('content-type') || '';
+				const buf  = new Uint8Array(await res.arrayBuffer());
+				// 0 = ok, res.status и mime пойдут в Godot
+				console.log(res)
+				return (0, res.status, mime, buf);
+			}catch(e){
+				// 1 = ошибка
+				return (1, 0, '', new Uint8Array());
+			}
 		}
 	};
 
