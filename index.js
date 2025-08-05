@@ -43,6 +43,7 @@ const PlinkoEvents = {
   LOAD_GAME: "LOAD_GAME", //Событие загрузки игры, вызывает после того, как запустился само окно игры и движок, передает конфиг игры(cfg)
 
   GAME_START: "GAME_START", //Инициирует начало игры с текущим state игрока
+  CHIPS_LAUNCHED: "CHIPS_LAUNCHED", //Все шарики текущей игры были запущены, для работы автоставки
   CHIP_SCORED: "CHIP_SCORED", //Шарик упал в корзину, обносить UI истории игры 
   /*{
     "time": Time.get_datetime_string_from_system(), //время попадания в корзину (дата + время системы пользователя)
@@ -58,11 +59,12 @@ const PlinkoEvents = {
   ROWS_UPDATE: "ROWS_UPDATE", //Событие изменения кол-ва рядов в игре, обновляет состояние шариков(chips), в state игрока
   MODIFIERS_UPDATE: "MODIFIERS_UPDATE", //Событие изменения модификаторов в игре, обновляет состояние модификаторов(modifiers) в state игрока
   BET_UPDATE: "BET_UPDATE", //Событие изменения ставки в игре, обновляет ставку (bet) и ее стоимость(bet_cost) в state игрока
-  AUTO_BET_UPDATE: "AUTO_BET_UPDATE", //Событие изменения авто-ставки в игре, обновляет авто-ставку(auto_bet) в state игрока
+  AUTO_BET_UPDATE: "AUTOBET_UPDATE", //Событие изменения авто-ставки в игре, обновляет авто-ставку(auto_bet) в state игрока
   RISK_FACTOR_UPDATE: "RISK_FACTOR_UPDATE" //Изменение риск-фактора в игре, обновляет риск-фактор(risk_factor) в state игрока
 }
 
 var cfg
+var is_playing = false
 
 window.addEventListener('config-ready', e => {
   cfg = e.detail;
@@ -80,15 +82,7 @@ function initUI(cfg) {
   // кнопка «Старт игры»
   document.getElementById('startBtn')
   .addEventListener('click', () => {
-    console.log('Клик по кнопке «Старт игры»');
-    var state = window.tonROLL.PLINKO.loadState()
-    var current_score = state.score
-    current_score -= state.bet_cost * cfg.chips[state.chips]
-    console.log(current_score)
-    state.score = current_score
-    document.getElementById('playerScoreValue').textContent = parseScore(current_score)
-    window.tonROLL.PLINKO.saveState(state)
-    window.tonROLL.PLINKO.emit(PlinkoEvents.GAME_START, play_game()) //TODO: вместо play_game() данные о игровой сессии полученные с сервера
+    start_game()
   });
 
   // обработка каруселей выбора кол-ва шариков
@@ -104,7 +98,7 @@ function initUI(cfg) {
 
     document.getElementById(id).textContent = config.chips[_chips_key_arr[v]];
     console.log(`Значение ${id} изменено на ${config.chips[_chips_key_arr[v]]}`);
-    window.tonROLL.PLINKO.emit(PlinkoEvents.CHIP_UPDATE, _chips_key_arr[v])
+    bus.emit(PlinkoEvents.CHIP_UPDATE, _chips_key_arr[v])
   }));
 
   // обработка каруселей выбора рядов
@@ -121,7 +115,7 @@ function initUI(cfg) {
 
     document.getElementById(id).textContent = config.rows[_rows_key_arr[v]].amount;
     console.log(`Значение ${id} изменено на ${_rows_key_arr[v]}`);
-    window.tonROLL.PLINKO.emit(PlinkoEvents.ROWS_UPDATE, _rows_key_arr[v])
+    bus.emit(PlinkoEvents.ROWS_UPDATE, _rows_key_arr[v])
   }));
 
 
@@ -129,6 +123,13 @@ function initUI(cfg) {
   const betValue = document.getElementById('betValue');
   betValue.addEventListener('input', () => {
     bus.emit(PlinkoEvents.BET_UPDATE, betValue.value);
+  });
+
+  const autoBet = document.getElementById('autoBet');
+
+  autoBet.addEventListener('input', () => {
+    console.log(autoBet.value)
+    bus.emit(PlinkoEvents.AUTO_BET_UPDATE, autoBet.value);
   });
 
   const select = document.getElementById('betSelect');
@@ -206,6 +207,7 @@ function setPlayerState(cfg){
           currency: "TON",
           bet: 100,
           bet_cost: 100,
+          autobet: 0,
           rows: Object.keys(cfg.rows)[0],
           chips: Object.keys(cfg.chips)[0],
           modifiers: {},
@@ -218,7 +220,8 @@ function setPlayerState(cfg){
   document.getElementById('playerScoreValue').textContent = parseScore(state.score)
   document.getElementById('chips_text').textContent = cfg.chips[state.chips]
   document.getElementById('rows_text').textContent = cfg.rows[state.rows].amount
-  document.getElementById("betValue").textContent = parseScore(state.bet)
+  document.getElementById("betValue").value = parseScore(state.bet)
+  document.getElementById("autoBet").value = parseScore(state.autobet)
   document.getElementById("betCost").textContent = parseScore(state.bet_cost)
   document.querySelectorAll('.currency').forEach(el => el.dataset.cur = 'ton');
 
@@ -229,6 +232,24 @@ function initGodotEvents(){
   window.tonROLL.PLINKO.on(PlinkoEvents.PLAYER_STATE_UPDATE, updatePlayerState)
   window.tonROLL.PLINKO.on(PlinkoEvents.CHIP_SCORED, updateScore)
   window.tonROLL.PLINKO.on(PlinkoEvents.GODOT_READY, godotReady)
+  window.tonROLL.PLINKO.on(PlinkoEvents.GAME_START, lockUI.bind(true))
+  window.tonROLL.PLINKO.on(PlinkoEvents.GAME_END, lockUI.bind(false))
+  window.tonROLL.PLINKO.on(PlinkoEvents.CHIPS_LAUNCHED, onChipsLaunched)
+}
+
+function start_game(){
+  console.log('Клик по кнопке «Старт игры»');
+  var state = window.tonROLL.PLINKO.loadState()
+  var current_score = state.score
+  var current_autobet = Math.max(0, state.autobet - 1)
+  current_score -= state.bet_cost * cfg.chips[state.chips]
+  console.log(current_score)
+  state.score = current_score
+  state.autobet = current_autobet
+  document.getElementById('playerScoreValue').textContent = parseScore(current_score)
+  document.getElementById('autoBet').value = current_autobet
+  window.tonROLL.PLINKO.saveState(state)
+  window.tonROLL.PLINKO.emit(PlinkoEvents.GAME_START, play_game(state)) //TODO: вместо play_game(state) данные о игровой сессии полученные с сервера
 }
 
 function updateScore(event_type, data) {
@@ -262,17 +283,40 @@ function updatePlayerState(event_type, data) {
   console.log("State updated")
 }
 
-function play_game(){
-    const player_data = window.tonROLL.PLINKO.loadState();
+function lockUI(event_type, data){
+  console.log("UI is locked: ", this)
+  document.getElementById('rows').querySelectorAll('.prev, .next')
+  .forEach(btn => btn.disabled = this)
+
+  const flags = [
+    { id: 'double_chip' },
+    { id: 'zone'},
+    { id: 'multiplier' },
+  ];
+
+  flags.forEach(({id}) => {
+    document.getElementById(id).disabled = this
+  })
+}
+
+function onChipsLaunched(event_type, data){
+  var state = window.tonROLL.PLINKO.loadState()
+
+  if (state.autobet > 0) {
+    start_game()
+  }
+}
+
+function play_game(client_data){
+    const player_data = client_data
     var game_data = {}
     player_data.winnings = 0
     game_data.winnings = 0        
     console.log("Calculating chips")
-    var _cdf = plinko_math.buildCDF(cfg.rows[player_data.rows].amount)
     var chip_data = new Array()
     var bonus_chips = new Array()
     for (let i = 0; i < cfg.chips[player_data.chips]; i++) {
-        calculate_chip(chip_data, player_data, _cdf, bonus_chips)
+        calculate_chip(chip_data, player_data, bonus_chips)
     }
     
     game_data.chip_data = chip_data
@@ -287,10 +331,10 @@ function play_game(){
 
 
 
-function calculate_chip(chip_arr, player_data, _cdf, bonus_chips){
+function calculate_chip(chip_arr, player_data, bonus_chips){
 
   var chip = {
-    target_bin: plinko_math.uniformToPocket(_cdf),
+    target_bin: 0,
     chip_value: player_data.bet,
     chip_cost: player_data.bet_cost,
     chip_result: 0,
@@ -314,7 +358,7 @@ function calculate_chip(chip_arr, player_data, _cdf, bonus_chips){
 
   for (var i = 0; i < cfg.rows[player_data.rows].amount; i++) {
     chip.way.push(current_col)
-    var jump_side = Math.floor(Math.random() * 10)%2
+    var jump_side = Math.round(Math.random() * 10)%2
     current_col += jump_side
     if (player_data.modifiers.zone != null && i != parseInt(cfg.rows[player_data.rows].amount))  {
       if (player_data.pin_tree[i][current_col-1] == 2){
@@ -331,15 +375,15 @@ function calculate_chip(chip_arr, player_data, _cdf, bonus_chips){
 
   chip_arr.push(chip)
 
-  count_double(bonus_chips, player_data, chip.target_bin, _cdf)
+  count_double(bonus_chips, player_data, chip.target_bin)
 }
 
 
-function count_double(bonus_chips, player_data, index, _cdf){
+function count_double(bonus_chips, player_data, index){
   if (player_data.modifiers.double_chip != null && (index == (cfg.modifiers.double_chip.positions[player_data.rows][0] ?? -1) || index == (cfg.modifiers.double_chip.positions[player_data.rows][1] ?? -1))) {
     var bonus_data = player_data
     bonus_data.bet_cost = 0
-    calculate_chip(bonus_chips, bonus_data, _cdf, bonus_chips)
+    calculate_chip(bonus_chips, bonus_data, bonus_chips)
   }
 }
 

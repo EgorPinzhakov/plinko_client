@@ -26,27 +26,27 @@ export function buildCDF1(n, p = 0.5) {
   
 
 function _binom_row(n) {
-	var row = new Array(n);
+	var row = new Array(n + 1);
 	row[0] = 1.0;
-	for (var k = 1; k < n; k++){
-	  row[k] = row[k-1] * parseFloat(n-k) / parseFloat(k);
+	for (var k = 1; k <= n; k++){
+	  row[k] = row[k-1] * parseFloat(n + 1 - k) / parseFloat(k);
   }
+  console.log(row)
 	return row;
 }
 
-export function buildCDF(rows){
+export function binom_prob(rows){
 	//Строим таблицу вероятностей и кумулятивную сумму
 	var binom = _binom_row(rows);
-	var inv = 1.0 / Math.pow(2.0, rows-1);
-	var acc = 0.0;
-	var _cdf = new Array();
-	for (var k = 0; k < rows; k++){
+	var inv = 1.0 / Math.pow(2.0, rows);
+	var _probs = new Array();
+	for (var k = 0; k <= rows; k++){
 		var p = binom[k] * inv;
-		acc += p;
-		_cdf.push(acc);                 // CDF[k] = Σ_{i≤k} P_{i}
+		_probs.push(p);                 // CDF[k] = Σ_{i≤k} P_{i}
   }
 	//(аккумулятор acc должен стать 1.0 — проверка на погрешность)
-	return _cdf;
+  console.log(_probs)
+	return _probs;
 }
 
 /*─────────────────────────────────────────────────────────────────────────*/
@@ -70,9 +70,11 @@ export function getMultipliers(weights, risk_factor, cdf, rtp){
   var mkr_arr = []
 
 
-  for (var i = 0; i < cdf.length - 1; i++) {
+  for (var i = 0; i < cdf.length; i++) {
     prob_table.push(Math.min(cdf[i], 1 - cdf[i]))
   }
+
+  console.log(prob_table)
 
   for (var k = 0; k < prob_table.length; k++) {
     prob_summ += prob_table[k] * Math.pow(weights[k], risk_factor)
