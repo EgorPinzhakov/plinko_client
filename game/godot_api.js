@@ -86,13 +86,5 @@
 
 	window.tonROLL.PLINKO.saveState  = (obj) =>
 		localStorage.setItem("plinko", JSON.stringify(obj));
-
-	/* 3. Регистрируем Bus как интерфейс "godotApi" (если это сборка Web-Godot) */
-	(function waitGodot () {
-	  if (typeof godot !== 'undefined' && godot.register_interface) {
-		godot.register_interface('godotApi', window.tonROLL);
-		console.log('[godotApi] godotApi registered');
-	  } else { setTimeout(waitGodot, 50); }
-	})();
   
   })();
