@@ -232,8 +232,8 @@ function initGodotEvents(){
   window.tonROLL.PLINKO.on(PlinkoEvents.PLAYER_STATE_UPDATE, updatePlayerState)
   window.tonROLL.PLINKO.on(PlinkoEvents.CHIP_SCORED, updateScore)
   window.tonROLL.PLINKO.on(PlinkoEvents.GODOT_READY, godotReady)
-  window.tonROLL.PLINKO.on(PlinkoEvents.GAME_START, lockUI.bind(null, [true]))
-  window.tonROLL.PLINKO.on(PlinkoEvents.GAME_END, lockUI.bind(null, [false]))
+  window.tonROLL.PLINKO.on(PlinkoEvents.GAME_START, lockUI.bind(null, true))
+  window.tonROLL.PLINKO.on(PlinkoEvents.GAME_END, lockUI.bind(null, false))
   window.tonROLL.PLINKO.on(PlinkoEvents.CHIPS_LAUNCHED, onChipsLaunched)
 }
 
@@ -284,7 +284,7 @@ function updatePlayerState(event_type, data) {
 }
 
 //Выключить/включить управление элементами интерфейса после старта игры
-function lockUI(event_type, data, is_locked){
+function lockUI(is_locked, event_type, data){
   console.log("UI is locked: ", is_locked)
   document.getElementById('rows').querySelectorAll('.prev, .next')
   .forEach(btn => btn.disabled = is_locked)
