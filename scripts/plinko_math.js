@@ -1,29 +1,4 @@
 
-export function buildCDF1(n, p = 0.5) {
-    const q   = 1 - p;
-    const cdf = new Float64Array(n + 1);
-    let      Cnk   = 1;        // C(n,0)
-    let      pPow  = 1;        // p^0
-    let      qPow  = q ** (n - 1);   // q^n
-    let      acc   = 0;
-  
-    for (let k = 0; k < n; ++k) {
-      if (k) {                        // рекуррентно: C(n,k)
-        Cnk  *= (n - k) / k;
-        pPow *= p;
-        qPow /= q;
-      }
-      const Pnk = Cnk * pPow * qPow;
-      acc += Pnk;
-      cdf[k] = acc;                   // CDF[k] = Σ_{i≤k} P_{n,i}
-    }
-    // небольшая гарантия «P‑сумма ≈ 1»
-    if (Math.abs(acc - 1) > 1e-9) {
-      throw new Error(`CDF does not sum to 1 (got ${acc})`);
-    }
-    return cdf;
-  }
-  
 
 function _binom_row(n) {
 	var row = new Array(n + 1);
@@ -45,7 +20,6 @@ export function binom_prob(rows){
 		_probs.push(p);                 // CDF[k] = Σ_{i≤k} P_{i}
   }
 	//(аккумулятор acc должен стать 1.0 — проверка на погрешность)
-  console.log(_probs)
 	return _probs;
 }
 
@@ -64,22 +38,24 @@ export function uniformToPocket(cdf) {
   return lo;                        // карман k
 }
 
+//Мультипликаторы корзин
 export function getMultipliers(weights, risk_factor, cdf, rtp){
+
   var prob_summ = 0
   var prob_table = []
   var mkr_arr = []
 
-
+  //Расчет таблицы вероятностей
   for (var i = 0; i < cdf.length; i++) {
     prob_table.push(Math.min(cdf[i], 1 - cdf[i]))
   }
 
-  console.log(prob_table)
-
+  //Pk в формуле расчета мультипликатора(сумма вероятности * вес корзины ^ риск фактора)
   for (var k = 0; k < prob_table.length; k++) {
     prob_summ += prob_table[k] * Math.pow(weights[k], risk_factor)
   }
 
+  //Расчет мультипликаторов корзин
   for (var k = 0; k < weights.length; k++){
     var wkr = Math.pow(weights[k], risk_factor)
     var mkr = (rtp * wkr) / prob_summ

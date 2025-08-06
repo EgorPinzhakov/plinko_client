@@ -1,7 +1,5 @@
 /* player_config // настройки игрока, для отображение элементов интерфейса и выбора параметров player_state. Выводится из обычного config в config_loader.playerConfig
-  {
-    
-  }
+
 */
 
 /* plinko_player_state
@@ -44,7 +42,7 @@ const PlinkoEvents = {
 
   GAME_START: "GAME_START", //Инициирует начало игры с текущим state игрока
   CHIPS_LAUNCHED: "CHIPS_LAUNCHED", //Все шарики текущей игры были запущены, для работы автоставки
-  CHIP_SCORED: "CHIP_SCORED", //Шарик упал в корзину, обносить UI истории игры 
+  CHIP_SCORED: "CHIP_SCORED", //Шарик упал в корзину, обновить UI истории игры 
   /*{
     "time": Time.get_datetime_string_from_system(), //время попадания в корзину (дата + время системы пользователя)
     "bet_value": ball.value, //ставка шарика
@@ -53,7 +51,9 @@ const PlinkoEvents = {
     "result": ball.value * _multiplier * ball.multiplier //результат шарика
     }
   */
-  GAME_END: "GAME_END", //Событие завершения игры, пропуск анимации
+  GAME_END: "GAME_END", //Событие завершения игры
+
+  GAME_SKIP: "GAME_SKIP", //Событие пропуска анимации
 
   CHIP_UPDATE: "CHIP_UPDATE", //Событие изменения кол-ва шариков в игре, обновляет состояние рядов(rows), в state игрока
   ROWS_UPDATE: "ROWS_UPDATE", //Событие изменения кол-ва рядов в игре, обновляет состояние шариков(chips), в state игрока
@@ -232,13 +232,13 @@ function initGodotEvents(){
   window.tonROLL.PLINKO.on(PlinkoEvents.PLAYER_STATE_UPDATE, updatePlayerState)
   window.tonROLL.PLINKO.on(PlinkoEvents.CHIP_SCORED, updateScore)
   window.tonROLL.PLINKO.on(PlinkoEvents.GODOT_READY, godotReady)
-  window.tonROLL.PLINKO.on(PlinkoEvents.GAME_START, lockUI.bind(true))
-  window.tonROLL.PLINKO.on(PlinkoEvents.GAME_END, lockUI.bind(false))
+  window.tonROLL.PLINKO.on(PlinkoEvents.GAME_START, lockUI.bind(null, [true]))
+  window.tonROLL.PLINKO.on(PlinkoEvents.GAME_END, lockUI.bind(null, [false]))
   window.tonROLL.PLINKO.on(PlinkoEvents.CHIPS_LAUNCHED, onChipsLaunched)
 }
 
+//Старт игры
 function start_game(){
-  console.log('Клик по кнопке «Старт игры»');
   var state = window.tonROLL.PLINKO.loadState()
   var current_score = state.score
   var current_autobet = Math.max(0, state.autobet - 1)
@@ -252,18 +252,18 @@ function start_game(){
   window.tonROLL.PLINKO.emit(PlinkoEvents.GAME_START, play_game(state)) //TODO: вместо play_game(state) данные о игровой сессии полученные с сервера
 }
 
+//Обновить счет игрока при падении шарика в корзину
 function updateScore(event_type, data) {
   var chip_data = JSON.parse(data)
   var player_state = window.tonROLL.PLINKO.loadState()
   var current_score = player_state.score
   current_score += chip_data.result
   player_state.score = current_score
-  console.log(chip_data.result)
-  console.log(player_state.score)
   document.getElementById('playerScoreValue').textContent = parseScore(current_score)
   window.tonROLL.PLINKO.saveState(player_state)
 }
 
+//Игра загружена в godot, выдать конфиг игры для настройки игрового поля
 function godotReady(event_type, data){
   window.tonROLL.PLINKO.emit(PlinkoEvents.LOAD_GAME, cfg)
 }
@@ -277,16 +277,17 @@ function updatePlayerState(event_type, data) {
     state.bet_cost += state.bet * state.modifiers[key].cost
   }
   document.getElementById("betValue").textContent = parseScore(state.bet)
-  document.getElementById("betCost").textContent = parseScore(state.bet_cost)
+  document.getElementById("betCost").textContent = parseScore(state.bet_cost * cfg.chips[state.chips])
 
   window.tonROLL.PLINKO.saveState(state);
   console.log("State updated")
 }
 
-function lockUI(event_type, data){
-  console.log("UI is locked: ", this)
+//Выключить/включить управление элементами интерфейса после старта игры
+function lockUI(event_type, data, is_locked){
+  console.log("UI is locked: ", is_locked)
   document.getElementById('rows').querySelectorAll('.prev, .next')
-  .forEach(btn => btn.disabled = this)
+  .forEach(btn => btn.disabled = is_locked)
 
   const flags = [
     { id: 'double_chip' },
@@ -295,10 +296,11 @@ function lockUI(event_type, data){
   ];
 
   flags.forEach(({id}) => {
-    document.getElementById(id).disabled = this
+    document.getElementById(id).disabled = is_locked
   })
 }
 
+//Запустить следующую игру после запуска шариков предыдущей игры
 function onChipsLaunched(event_type, data){
   var state = window.tonROLL.PLINKO.loadState()
 
@@ -313,10 +315,10 @@ function play_game(client_data){
     player_data.winnings = 0
     game_data.winnings = 0        
     console.log("Calculating chips")
-    var chip_data = new Array()
-    var bonus_chips = new Array()
+    var chip_data = new Array() //Массив шариков для кол-ва шариков выбранных игроком
+    var bonus_chips = new Array() //Бонусные шарики в зависимости от модификаторов(двойные корзины)
     for (let i = 0; i < cfg.chips[player_data.chips]; i++) {
-        calculate_chip(chip_data, player_data, bonus_chips)
+        calculate_chip(chip_data, bonus_chips, player_data)
     }
     
     game_data.chip_data = chip_data
@@ -324,14 +326,13 @@ function play_game(client_data){
     game_data.winnings = player_data.winnings
     // ── 4. Отправляем JSON‑ответ ───────────────────────────
     console.log("Game Started")
-    console.log(game_data)
     return game_data
 }
 
 
 
 
-function calculate_chip(chip_arr, player_data, bonus_chips){
+function calculate_chip(chip_arr, bonus_chips, player_data){
 
   var chip = {
     target_bin: 0,
@@ -348,21 +349,22 @@ function calculate_chip(chip_arr, player_data, bonus_chips){
   if (player_data.modifiers.multiplier != null) {
     multiplier_chance += 0.2
   }
-  console.log(multiplier_chance)
 
   if (roll_rarity < multiplier_chance){
-    chip.multiplier[0] *= 2
+    chip.multiplier[0] = step_up(chip.multiplier.at(-1))
   }
 
   var current_col = 1
 
+  //Маршрут фишки
   for (var i = 0; i < cfg.rows[player_data.rows].amount; i++) {
     chip.way.push(current_col)
     var jump_side = Math.round(Math.random() * 10)%2
     current_col += jump_side
+    //Если x2 зоны в игре и фишка пролетает через отверстие зоны
     if (player_data.modifiers.zone != null && i != parseInt(cfg.rows[player_data.rows].amount))  {
       if (player_data.pin_tree[i][current_col-1] == 2){
-        chip.multiplier.push(chip.multiplier[chip.multiplier.length-1] * 2)
+        chip.multiplier.push(step_up(chip.multiplier.at(-1)))
       }
     }
   }
@@ -375,16 +377,23 @@ function calculate_chip(chip_arr, player_data, bonus_chips){
 
   chip_arr.push(chip)
 
-  count_double(bonus_chips, player_data, chip.target_bin)
+  //Если фишка упала в двойную корзину и модификатор в игре
+  if (player_data.modifiers.double_chip != null && (chip.target_bin == (cfg.modifiers.double_chip.positions[player_data.rows][0] ?? -1) || chip.target_bin == (cfg.modifiers.double_chip.positions[player_data.rows][1] ?? -1))) {
+    count_double(bonus_chips, player_data)
+  }
 }
 
 
-function count_double(bonus_chips, player_data, index){
-  if (player_data.modifiers.double_chip != null && (index == (cfg.modifiers.double_chip.positions[player_data.rows][0] ?? -1) || index == (cfg.modifiers.double_chip.positions[player_data.rows][1] ?? -1))) {
+function count_double(bonus_chips, player_data){
     var bonus_data = player_data
     bonus_data.bet_cost = 0
-    calculate_chip(bonus_chips, bonus_data, bonus_chips)
-  }
+    calculate_chip(bonus_chips, bonus_chips, bonus_data)
+}
+
+function step_up(mult){
+  if (mult == 1) mult = 2
+  else mult += 2
+  return mult
 }
 
 function parseScore(raw) {

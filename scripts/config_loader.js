@@ -1,7 +1,6 @@
 import * as plinko_math from './plinko_math.js';
 
 export async function loadConfig(url = "../config/game_config.json") {
-  console.log(url)
   const rsp = await fetch(url, 
     { method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -27,7 +26,6 @@ export function playerConfig(cfg){
       playerConfig.rows[key][risk_key] = {
         bin_multipliers: bin_multipliers,
       }
-      console.log(playerConfig.rows[key][risk_key][bin_multipliers])
     }
   }
   playerConfig.bet_variants = cfg.bet_variants
@@ -48,5 +46,8 @@ export function playerConfig(cfg){
   playerConfig.modifiers.zone.positions = cfg.modifiers.zone.positions
 
   playerConfig.modifiers.double_chip.positions = cfg.modifiers.double_chip.positions
+
+  console.log(playerConfig)
+
   return playerConfig
 }
