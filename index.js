@@ -31,8 +31,6 @@
 
 */
 
-import * as plinko_math from "./scripts/plinko_math.js"
-
 const PlinkoEvents = {
   PLAYER_STATE_UPDATE: "STATE_UPDATE", //Событие изменения состояния игрока в godot, при изменении кол-ва рядом, шариков, модификаторов в игре, размера ставки или автоставки
   

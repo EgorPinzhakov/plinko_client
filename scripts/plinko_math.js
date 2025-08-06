@@ -6,7 +6,6 @@ function _binom_row(n) {
 	for (var k = 1; k <= n; k++){
 	  row[k] = row[k-1] * parseFloat(n + 1 - k) / parseFloat(k);
   }
-  console.log(row)
 	return row;
 }
 

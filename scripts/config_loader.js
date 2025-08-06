@@ -47,7 +47,5 @@ export function playerConfig(cfg){
 
   playerConfig.modifiers.double_chip.positions = cfg.modifiers.double_chip.positions
 
-  console.log(playerConfig)
-
   return playerConfig
 }
