@@ -1,5 +1,383 @@
 /* player_config // настройки игрока, для отображение элементов интерфейса и выбора параметров player_state. Выводится из обычного config в config_loader.playerConfig
-
+  {
+    "rows": {
+        "7": {
+            "amount": 7,
+            "low_risk": {
+                "bin_multipliers": [
+                    2,
+                    1.6,
+                    1.1,
+                    0.7,
+                    0.7,
+                    1.1,
+                    1.6,
+                    2
+                ]
+            },
+            "medium_risk": {
+                "bin_multipliers": [
+                    3,
+                    2.2,
+                    1.2,
+                    0.5,
+                    0.5,
+                    1.2,
+                    2.2,
+                    3
+                ]
+            },
+            "high_risk": {
+                "bin_multipliers": [
+                    4,
+                    2.8,
+                    1.2,
+                    0.3,
+                    0.3,
+                    1.2,
+                    2.8,
+                    4
+                ]
+            }
+        },
+        "9": {
+            "amount": 9,
+            "low_risk": {
+                "bin_multipliers": [
+                    2.4,
+                    2,
+                    1.5,
+                    1.1,
+                    0.6,
+                    0.6,
+                    1.1,
+                    1.5,
+                    2,
+                    2.4
+                ]
+            },
+            "medium_risk": {
+                "bin_multipliers": [
+                    4,
+                    3,
+                    1.9,
+                    1.1,
+                    0.4,
+                    0.4,
+                    1.1,
+                    1.9,
+                    3,
+                    4
+                ]
+            },
+            "high_risk": {
+                "bin_multipliers": [
+                    6,
+                    4,
+                    2.2,
+                    1,
+                    0.3,
+                    0.3,
+                    1,
+                    2.2,
+                    4,
+                    6
+                ]
+            }
+        },
+        "12": {
+            "amount": 12,
+            "low_risk": {
+                "bin_multipliers": [
+                    6,
+                    4,
+                    2.6,
+                    1.8,
+                    1.1,
+                    0.7,
+                    0.5,
+                    0.7,
+                    1.1,
+                    1.8,
+                    2.6,
+                    4,
+                    6
+                ]
+            },
+            "medium_risk": {
+                "bin_multipliers": [
+                    18,
+                    10,
+                    4,
+                    2.3,
+                    1,
+                    0.5,
+                    0.3,
+                    0.5,
+                    1,
+                    2.3,
+                    4,
+                    10,
+                    18
+                ]
+            },
+            "high_risk": {
+                "bin_multipliers": [
+                    45,
+                    20,
+                    6,
+                    2.5,
+                    0.8,
+                    0.3,
+                    0.1,
+                    0.3,
+                    0.8,
+                    2.5,
+                    6,
+                    20,
+                    45
+                ]
+            }
+        },
+        "15": {
+            "amount": 15,
+            "low_risk": {
+                "bin_multipliers": [
+                    10,
+                    7,
+                    5,
+                    3,
+                    2,
+                    1.3,
+                    0.8,
+                    0.5,
+                    0.5,
+                    0.8,
+                    1.3,
+                    2,
+                    3,
+                    5,
+                    7,
+                    10
+                ]
+            },
+            "medium_risk": {
+                "bin_multipliers": [
+                    42,
+                    21,
+                    10,
+                    5,
+                    2.6,
+                    1.3,
+                    0.5,
+                    0.3,
+                    0.3,
+                    0.5,
+                    1.3,
+                    2.6,
+                    5,
+                    10,
+                    21,
+                    42
+                ]
+            },
+            "high_risk": {
+                "bin_multipliers": [
+                    136,
+                    52,
+                    20,
+                    7,
+                    2.8,
+                    1.1,
+                    0.3,
+                    0.1,
+                    0.1,
+                    0.3,
+                    1.1,
+                    2.8,
+                    7,
+                    20,
+                    52,
+                    136
+                ]
+            }
+        }
+    },
+    "modifiers": {
+        "zone": {
+            "cost": 0.6,
+            "positions": {
+                "7": {
+                    "3": [
+                        0,
+                        2,
+                        0,
+                        0,
+                        0
+                    ],
+                    "5": [
+                        0,
+                        0,
+                        2,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                "9": {
+                    "3": [
+                        0,
+                        2,
+                        0,
+                        0,
+                        0
+                    ],
+                    "5": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        2,
+                        0,
+                        0
+                    ],
+                    "7": [
+                        0,
+                        2,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                "12": {
+                    "5": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        2,
+                        0
+                    ],
+                    "7": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        2,
+                        0,
+                        0
+                    ],
+                    "9": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        2,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                "15": {
+                    "7": [
+                        0,
+                        0,
+                        2,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "9": [
+                        0,
+                        0,
+                        0,
+                        2,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "12": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        2,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            }
+        },
+        "double_chip": {
+            "cost": 0.4,
+            "positions": {
+                "7": [
+                    2,
+                    5
+                ],
+                "9": [
+                    2,
+                    7
+                ],
+                "12": [
+                    3,
+                    9
+                ],
+                "15": [
+                    4,
+                    11
+                ]
+            }
+        },
+        "multiplier": {
+            "cost": 0.2,
+            "chance": 0.2
+        }
+    },
+    "bet_variants": [
+        0.1,
+        0.5,
+        1,
+        5,
+        10
+    ],
+    "chips": {
+        "single": 1,
+        "few": 3,
+        "medium": 5,
+        "high": 10
+    },
+    "risk": [
+        "low_risk",
+        "medium_risk",
+        "high_risk"
+    ]
+}
 */
 
 /* plinko_player_state
@@ -177,7 +555,7 @@ function initUI(cfg) {
     });
   });
 
-    const btn   = document.getElementById('riskBtn');
+  const btn   = document.getElementById('riskBtn');
   const icons = Array.from(btn.querySelectorAll('.risk-icon'));
   let level = 0; // 0..3 (0 = ничего не горит)
 
@@ -296,6 +674,8 @@ function lockUI(is_locked, event_type, data){
   flags.forEach(({id}) => {
     document.getElementById(id).disabled = is_locked
   })
+
+  document.getElementById('riskBtn').disabled = is_locked;
 }
 
 //Запустить следующую игру после запуска шариков предыдущей игры
