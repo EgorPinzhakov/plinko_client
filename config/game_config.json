@@ -32,9 +32,9 @@
 	},
 	
 	"risk": {
-		"low_risk": 0.6,
+		"low_risk": 0.7,
 		"medium_risk": 1,
-		"high_risk": 1.4
+		"high_risk": 1.5
 	},
 
 	"modifiers": {
