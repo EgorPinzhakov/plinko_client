@@ -416,6 +416,9 @@ const PlinkoEvents = {
   GODOT_READY: "GODOT_READY", //Событие загрузки окна игры и запуска движка
   LOAD_GAME: "LOAD_GAME", //Событие загрузки игры, вызывает после того, как запустился само окно игры и движок, передает конфиг игры(cfg)
 
+  AUDIO_MUTED: "AUDIO_MUTED", //Событие вкл/выкл звука, data: bool
+  LAUNCH_POWER_UPDATE: "LAUNCH_POWER_UPDATE", //Событие изменения силы запуска шарика
+
   GAME_START: "GAME_START", //Инициирует начало игры с текущим state игрока
   CHIPS_LAUNCHED: "CHIPS_LAUNCHED", //Все шарики текущей игры были запущены, для работы автоставки
   CHIP_SCORED: "CHIP_SCORED", //Шарик упал в корзину, обновить UI истории игры 
@@ -572,6 +575,13 @@ function initUI(cfg) {
   }
 
   btn.addEventListener('click', nextLevel);
+
+  const muteBtn = document.getElementById("mute")
+
+  muteBtn.addEventListener('change', () => {
+    console.log(`[UI] ${muteBtn} =`, muteBtn.checked);
+    bus.emit(PlinkoEvents.AUDIO_MUTED, muteBtn.checked);
+  });
 
   render(); // начальная отрисовка
 }
