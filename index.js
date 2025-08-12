@@ -477,7 +477,7 @@ function initUI(cfg) {
 
     document.getElementById(id).textContent = config.chips[_chips_key_arr[v]];
     console.log(`Значение ${id} изменено на ${config.chips[_chips_key_arr[v]]}`);
-    bus.emit(PlinkoEvents.CHIP_UPDATE, _chips_key_arr[v])
+    bus.emit(PlinkoEvents.CHIP_UPDATE, v)
   }));
 
   // обработка каруселей выбора рядов
