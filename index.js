@@ -773,7 +773,7 @@ function calculate_chip(chip_arr, bonus_chips, player_data){
 
 
 function count_double(bonus_chips, player_data){
-    var bonus_data = player_data
+    var bonus_data = new Object(player_data)
     bonus_data.bet_cost = 0
     calculate_chip(bonus_chips, bonus_chips, bonus_data)
 }
