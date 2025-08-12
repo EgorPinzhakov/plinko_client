@@ -22,7 +22,7 @@ export function playerConfig(cfg){
     }
     var _probs = plinko_math.binom_prob(cfg.rows[key].amount)
     for (var risk_key of Object.keys(cfg.risk)) {
-      var bin_multipliers = plinko_math.getMultipliers(cfg.rows[key].weights, cfg.risk[risk_key], _probs, cfg.RTP)
+      var bin_multipliers = cfg.rows[key][risk_key]
       playerConfig.rows[key][risk_key] = {
         bin_multipliers: bin_multipliers,
       }
