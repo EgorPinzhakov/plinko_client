@@ -595,7 +595,7 @@ function setPlayerState(cfg){
           bet_cost: 100,
           autobet: 0,
           rows: Object.keys(cfg.rows)[0],
-          chips: Object.keys(cfg.chips)[0],
+          chips: Object.values(cfg.chips)[0],
           modifiers: {},
           risk: cfg.risk[0]
       }
@@ -604,7 +604,7 @@ function setPlayerState(cfg){
   var state =  window.tonROLL.PLINKO.loadState()
 
   document.getElementById('playerScoreValue').textContent = parseScore(state.score)
-  document.getElementById('chips_text').textContent = cfg.chips[state.chips]
+  document.getElementById('chips_text').textContent = state.chips
   document.getElementById('rows_text').textContent = cfg.rows[state.rows].amount
   document.getElementById("betValue").value = parseScore(state.bet)
   document.getElementById("autoBet").value = parseScore(state.autobet)
@@ -663,7 +663,7 @@ function updatePlayerState(event_type, data) {
     state.bet_cost += state.bet * state.modifiers[key].cost
   }
   document.getElementById("betValue").textContent = parseScore(state.bet)
-  document.getElementById("betCost").textContent = parseScore(state.bet_cost * cfg.chips[state.chips])
+  document.getElementById("betCost").textContent = parseScore(state.bet_cost * state.chips)
 
   window.tonROLL.PLINKO.saveState(state);
   console.log("State updated")
@@ -705,7 +705,7 @@ function play_game(client_data){
     console.log("Calculating chips")
     var chip_data = new Array() //Массив шариков для кол-ва шариков выбранных игроком
     var bonus_chips = new Array() //Бонусные шарики в зависимости от модификаторов(двойные корзины)
-    for (let i = 0; i < cfg.chips[player_data.chips]; i++) {
+    for (let i = 0; i < player_data.chips; i++) {
         calculate_chip(chip_data, bonus_chips, player_data)
     }
     
