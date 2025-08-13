@@ -448,6 +448,7 @@ const PlinkoEvents = {
 
 var cfg
 var is_playing = false
+const bus = window.tonROLL.PLINKO;
 
 window.addEventListener('config-ready', e => {
   cfg = e.detail;
@@ -458,7 +459,7 @@ window.addEventListener('config-ready', e => {
 
 
 function initUI(cfg) {
-  const bus = window.tonROLL.PLINKO;
+
   const values = { chips_text: 0, rows_text: 0 };
   const config = cfg;
 
@@ -638,6 +639,7 @@ function start_game(){
   state.autobet = current_autobet
   document.getElementById('playerScoreValue').textContent = parseScore(current_score)
   document.getElementById('autoBet').value = current_autobet
+  bus.emit(PlinkoEvents.AUTO_BET_UPDATE, current_autobet);
   window.tonROLL.PLINKO.saveState(state)
   window.tonROLL.PLINKO.emit(PlinkoEvents.GAME_START, play_game(state)) //TODO: вместо play_game(state) данные о игровой сессии полученные с сервера
 }
