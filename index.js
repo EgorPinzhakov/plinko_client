@@ -438,6 +438,7 @@ const PlinkoEvents = {
 
   GAME_SKIP: "GAME_SKIP", //Событие пропуска анимации
 
+  BACKGROUND_UPDATE: "BACKGROUND_UPDATE", //Событие обновления заднего фона
   CHIP_UPDATE: "CHIP_UPDATE", //Событие изменения кол-ва шариков в игре, обновляет состояние рядов(rows), в state игрока
   ROWS_UPDATE: "ROWS_UPDATE", //Событие изменения кол-ва рядов в игре, обновляет состояние шариков(chips), в state игрока
   MODIFIERS_UPDATE: "MODIFIERS_UPDATE", //Событие изменения модификаторов в игре, обновляет состояние модификаторов(modifiers) в state игрока
@@ -467,6 +468,7 @@ function initUI(cfg) {
   document.getElementById('startBtn')
   .addEventListener('click', () => {
     start_game()
+    bus.emit(PlinkoEvents.BACKGROUND_UPDATE, {})
   });
 
   // обработка каруселей выбора кол-ва шариков
