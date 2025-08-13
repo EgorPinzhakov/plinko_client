@@ -481,7 +481,7 @@ function initUI(cfg) {
 
     document.getElementById(id).textContent = config.chips[_chips_key_arr[v]];
     console.log(`Значение ${id} изменено на ${config.chips[_chips_key_arr[v]]}`);
-    bus.emit(PlinkoEvents.CHIP_UPDATE, v)
+    bus.emit(PlinkoEvents.CHIP_UPDATE, config.chips[_chips_key_arr[v]])
   }));
 
   // обработка каруселей выбора рядов
@@ -632,7 +632,7 @@ function start_game(){
   var state = window.tonROLL.PLINKO.loadState()
   var current_score = state.score
   var current_autobet = Math.max(0, state.autobet - 1)
-  current_score -= state.bet_cost * cfg.chips[state.chips]
+  current_score -= state.bet_cost * state.chips
   console.log(current_score)
   state.score = current_score
   state.autobet = current_autobet
@@ -690,6 +690,8 @@ function lockUI(is_locked, event_type, data){
   })
 
   document.getElementById('riskBtn').disabled = is_locked;
+
+  console.log(data)
 }
 
 //Запустить следующую игру после запуска шариков предыдущей игры
