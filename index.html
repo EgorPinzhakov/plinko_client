@@ -44,19 +44,20 @@
       opacity:1; filter:none;
     }
   </style>
-    <!-- ⬇ подключаем шину первым -->
-    <script src="game/godot_api.js"></script>
-    <script type="module">
-      import { loadConfig, playerConfig } from "./scripts/config_loader.js";
   
-      // делаем конфиг глобальным, чтобы main.js и другие могли сразу брать
-      loadConfig().then(cfg => {
-        var pl_cfg = playerConfig(cfg)
-        window.tonROLL.PLINKO.CONFIG = pl_cfg;
-        window.dispatchEvent(new CustomEvent('config-ready', { detail: pl_cfg }));
-        console.log("[config] loaded", pl_cfg);
-      }).catch(console.error);
-    </script>
+  <!-- ⬇ подключаем шину первым -->
+  <script src="game/godot_api.js"></script>
+  <script type="module">
+    import { loadConfig, playerConfig } from "./scripts/config_loader.js";
+
+    // делаем конфиг глобальным, чтобы main.js и другие могли сразу брать
+    loadConfig().then(cfg => {
+      var pl_cfg = playerConfig(cfg)
+      window.tonROLL.PLINKO.CONFIG = pl_cfg;
+      window.dispatchEvent(new CustomEvent('config-ready', { detail: pl_cfg }));
+      console.log("[config] loaded", pl_cfg);
+    }).catch(console.error);
+  </script>
 </head>
 <body>
   <div class="wrapper">

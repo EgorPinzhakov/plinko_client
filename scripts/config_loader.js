@@ -3,7 +3,10 @@ import * as plinko_math from './plinko_math.js';
 export async function loadConfig(url = "../config/game_config.json") {
   const rsp = await fetch(url, 
     { method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", 
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Cross-Origin-Embedder-Policy": "require-corp"
+      },
       cache: "no-cache" }
   );
   if (!rsp.ok) throw new Error(`Config load error: ${rsp.status}`);
