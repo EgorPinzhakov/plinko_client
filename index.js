@@ -207,26 +207,27 @@
     "modifiers": {
         "zone": {
             "cost": 0.6,
-            "positions": 				
+            "positions":{
                 "7": {
-                  "3":[0, 2, 0, 0, 0],
-                  "5":[0, 0, 0, 0, 0, 2, 0]
+                  "4": [0, 0, 2, 0, 0, 0],
+                  "5": [0, 0, 0, 0, 0, 2, 0]
                 },
                 "9": {
-                  "3": [0, 0, 0, 0, 2],
-                  "5": [0, 0, 0, 0, 2, 0, 0],
-                  "7": [0, 2, 0, 0, 0, 0, 0, 0, 0]
+                  "5": [0, 2, 0, 0, 0, 0],
+                  "6": [0, 0, 0, 0, 2, 0, 0, 0],
+                  "7": [0, 0, 0, 0, 0, 0, 0, 2, 0]
                 },
                 "12": {
-                  "5": [0, 0, 0, 2, 0, 0, 0],
+                  "5": [0, 0, 0, 0, 0, 2, 0],
                   "7": [0, 2, 0, 0, 0, 0, 0, 0, 0],
-                  "9": [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                  "9": [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0]
                 },
                 "15": {
                   "7": [0, 0, 0, 0, 0, 0, 2, 0, 0],
-                  "9": [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0],
+                  "9": [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
                   "12": [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0]
                 }
+          }
         },
         "double_chip": {
             "cost": 0.5,
@@ -561,10 +562,6 @@ function updatePlayerState(event_type, data) {
 
   var state = JSON.parse(data)
 
-  state.bet_cost = state.bet
-  for (var key in state.modifiers){
-    state.bet_cost += state.bet * state.modifiers[key].cost
-  }
   document.getElementById("betValue").textContent = parseScore(state.bet)
   document.getElementById("betCost").textContent = parseScore(state.bet_cost * state.chips)
 
@@ -678,7 +675,7 @@ function calculate_chip(chip_arr, bonus_chips, player_data){
 
 
 function count_double(bonus_chips, player_data){
-    var bonus_data = new Object(player_data)
+    var bonus_data = JSON.parse(JSON.stringify(player_data))
     bonus_data.bet_cost = 0
     calculate_chip(bonus_chips, bonus_chips, bonus_data)
 }

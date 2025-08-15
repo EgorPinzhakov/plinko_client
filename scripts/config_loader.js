@@ -41,6 +41,8 @@ export function playerConfig(cfg){
       cost: cfg.modifiers[key].cost 
     }
   }
+  playerConfig.cost_mod = cfg.cost_mod
+
   playerConfig.modifiers.multiplier.chance = cfg.modifiers.multiplier.chance
 
   playerConfig.modifiers.zone.positions = cfg.modifiers.zone.positions
