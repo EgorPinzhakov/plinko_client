@@ -593,6 +593,7 @@ function initUI(cfg) {
   render(); // начальная отрисовка
 }
 
+
 function setPlayerState(cfg){
   window.tonROLL.PLINKO.saveState(
       {
