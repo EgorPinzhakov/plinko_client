@@ -203,135 +203,30 @@
             }
         }
     },
+    "cost_mod": 0.1,
     "modifiers": {
         "zone": {
             "cost": 0.6,
-            "positions": {
+            "positions": 				
                 "7": {
-                    "3": [
-                        0,
-                        2,
-                        0,
-                        0,
-                        0
-                    ],
-                    "5": [
-                        0,
-                        0,
-                        0,
-                        0,
-                        2,
-                        0,
-                        0
-                    ]
+                  "3":[0, 2, 0, 0, 0],
+                  "5":[0, 0, 0, 0, 0, 2, 0]
                 },
                 "9": {
-                    "3": [
-                        0,
-                        2,
-                        0,
-                        0,
-                        0
-                    ],
-                    "5": [
-                        0,
-                        0,
-                        0,
-                        0,
-                        2,
-                        0,
-                        0
-                    ],
-                    "7": [
-                        0,
-                        2,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0
-                    ]
+                  "3": [0, 0, 0, 0, 2],
+                  "5": [0, 0, 0, 0, 2, 0, 0],
+                  "7": [0, 2, 0, 0, 0, 0, 0, 0, 0]
                 },
                 "12": {
-                    "5": [
-                        0,
-                        0,
-                        0,
-                        2,
-                        0,
-                        0,
-                        0
-                    ],
-                    "7": [
-                        0,
-                        0,
-                        2,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0
-                    ],
-                    "9": [
-                        0,
-                        0,
-                        0,
-                        2,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0
-                    ]
+                  "5": [0, 0, 0, 2, 0, 0, 0],
+                  "7": [0, 2, 0, 0, 0, 0, 0, 0, 0],
+                  "9": [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 },
                 "15": {
-                    "7": [
-                        0,
-                        0,
-                        2,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0
-                    ],
-                    "9": [
-                        0,
-                        0,
-                        0,
-                        2,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0
-                    ],
-                    "12": [
-                        0,
-                        0,
-                        0,
-                        0,
-                        2,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0
-                    ]
+                  "7": [0, 0, 0, 0, 0, 0, 2, 0, 0],
+                  "9": [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0],
+                  "12": [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0]
                 }
-            }
         },
         "double_chip": {
             "cost": 0.5,
@@ -776,7 +671,7 @@ function calculate_chip(chip_arr, bonus_chips, player_data){
   chip_arr.push(chip)
 
   //Если фишка упала в двойную корзину и модификатор в игре
-  if (player_data.modifiers.double_chip != null && (chip.target_bin == (cfg.modifiers.double_chip.positions[player_data.rows][0] ?? -1) || chip.target_bin == (cfg.modifiers.double_chip.positions[player_data.rows][1] ?? -1))) {
+  if (player_data.modifiers.double_chip != null && cfg.modifiers.double_chip.positions[player_data.rows].includes(chip.target_bin)) {
     count_double(bonus_chips, player_data)
   }
 }
