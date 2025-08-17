@@ -133,7 +133,6 @@ const engine = new Engine(GODOT_CONFIG);
 			return;
 		}
 		statusOverlay.style.visibility = 'visible';
-		statusProgress.style.visibility = 'hidden';
 		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
 		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
 		statusMode = mode;
