@@ -13,6 +13,7 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
         self.send_header("Cross-Origin-Opener-Policy", "same-origin")
         self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
         self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Content-Encoding", "gzip")
         super().end_headers()
 
 
@@ -30,14 +31,14 @@ def serve(root, port, run_browser):
     if run_browser:
         # Open the served page in the user's default browser.
         print("Opening the served URL in the default browser (use `--no-browser` or `-n` to disable this).")
-        shell_open(f"http://127.0.0.1:{port}")
+        shell_open(f"https://127.0.0.1:{port}")
 
     test(CORSRequestHandler, HTTPServer, port=port)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--port", help="port to listen on", default=8080, type=int)
+    parser.add_argument("-p", "--port", help="port to listen on", default=8060, type=int)
     parser.add_argument(
         "-r", "--root", help="path to serve as root (relative to `platform/web/`)", default="../../bin", type=Path
     )
