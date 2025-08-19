@@ -628,6 +628,7 @@ function calculate_chip(chip_arr, bonus_chips, player_data){
     target_bin: 0,
     chip_value: player_data.bet,
     chip_cost: player_data.bet_cost,
+    chip_currency: player_data.currency,
     chip_result: 0,
     multiplier: [1],
     way: []
