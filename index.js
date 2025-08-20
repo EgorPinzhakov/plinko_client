@@ -609,8 +609,12 @@ function play_game(client_data){
     var bonus_chips = new Array() //Бонусные шарики в зависимости от модификаторов(двойные корзины)
     for (let i = 0; i < player_data.chips; i++) {
         calculate_chip(chip_data, bonus_chips, player_data)
+        player_data.winnings += (parseInt(chip_data[i].chip_result) - chip_data[i].chip_cost)
     }
     
+    for (let i = 0; i < bonus_chips.length; i++){
+      player_data.winnings += parseInt(bonus_chips[i].chip_result)
+    }
     game_data.chip_data = chip_data
     game_data.bonus_chips = bonus_chips
     game_data.winnings = player_data.winnings
@@ -663,8 +667,6 @@ function calculate_chip(chip_arr, bonus_chips, player_data){
   chip.target_bin = current_col - 1
 
   chip.chip_result = chip.chip_value * chip.multiplier[chip.multiplier.length-1] * cfg.rows[player_data.rows][player_data.risk].bin_multipliers[chip.target_bin]
-
-  player_data.winnings += (parseInt(chip.chip_result) - chip.chip_cost)
 
   chip_arr.push(chip)
 
