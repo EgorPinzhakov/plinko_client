@@ -319,6 +319,7 @@ const PlinkoEvents = {
   AUDIO_MUTED: "AUDIO_MUTED", //Событие вкл/выкл звука, data: bool
   LAUNCH_POWER_UPDATE: "LAUNCH_POWER_UPDATE", //Событие изменения силы запуска шарика
 
+  AWAIT_PLAY: "AWAIT_PLAY", //Ожидание результата игры
   GAME_START: "GAME_START", //Инициирует начало игры с текущим state игрока
   CHIPS_LAUNCHED: "CHIPS_LAUNCHED", //Все шарики текущей игры были запущены, для работы автоставки
   CHIP_SCORED: "CHIP_SCORED", //Шарик упал в корзину, обновить UI истории игры 
