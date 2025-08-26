@@ -1,3 +1,7 @@
+const OPERATIONS = {
+	MULTIPLY: "MULTIPLY"
+}
+
 /* godotApi.js */
 (function initGateway () {
 
@@ -68,10 +72,44 @@
 		const handlers = Object.create(null);
   
 		window.tonROLL.PLINKO = {
-		  on  (t, cb) { (handlers[t] = handlers[t] || []).push(cb); },
-		  off (t, cb) { if (handlers[t]) handlers[t] = handlers[t].filter(f => f !== cb); },
-		  emit(t, d)  {
-			 	(handlers[t] || []).forEach(cb => cb(t, d)); 
+			on  (t, cb) { (handlers[t] = handlers[t] || []).push(cb); },
+			off (t, cb) { if (handlers[t]) handlers[t] = handlers[t].filter(f => f !== cb); },
+			emit(t, d)  {
+					(handlers[t] || []).forEach(cb => cb(t, d)); 
+			},
+			calc_decimal(method, nums) {
+				if (nums.length === 0) {
+				  throw new Error("Нужно передать хотя бы одно число");
+				}
+			  
+				// Преобразуем все входные числа в Decimal
+				let result = new Decimal(nums[0]);
+			  
+				for (let i = 1; i < nums.length; i++) {
+				  const n = new Decimal(nums[i]);
+			  
+				  switch (method) {
+					case "add":
+					  result = result.add(n);
+					  break;
+					case "sub":
+					  result = result.sub(n);
+					  break;
+					case "mul":
+					  result = result.mul(n);
+					  break;
+					case "div":
+					  result = result.div(n);
+					  break;
+					case "pow":
+					  result = result.pow(n);
+					  break;
+					default:
+					  throw new Error(`Неизвестная операция: ${method}`);
+				  }
+				}
+			  
+				return result.toString();
 			}
 		};
 		console.log('[godotApi] New Bus created');
