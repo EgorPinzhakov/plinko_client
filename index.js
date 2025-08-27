@@ -5,14 +5,14 @@
             "amount": 7,
             "low_risk": {
                 "bin_multipliers": [
-                    2,
-                    1.6,
-                    1.1,
-                    0.7,
-                    0.7,
-                    1.1,
-                    1.6,
-                    2
+                    2.2,
+                    1.8,
+                    1.2,
+                    0.6,
+                    0.6,
+                    1.2,
+                    1.8,
+                    2.2
                 ]
             },
             "medium_risk": {
@@ -72,16 +72,16 @@
             },
             "high_risk": {
                 "bin_multipliers": [
-                    6,
-                    4,
-                    2.2,
+                    7,
+                    5,
+                    2.3,
                     1,
-                    0.3,
-                    0.3,
+                    0.2,
+                    0.2,
                     1,
-                    2.2,
-                    4,
-                    6
+                    2.3,
+                    5,
+                    7
                 ]
             }
         },
@@ -119,30 +119,30 @@
                     4,
                     10,
                     18
-              ]
+                ]
             },
             "high_risk": {
                 "bin_multipliers": [
-                    40,
-                    19,
-                    6,
-                    2.5,
-                    0.9,
+                    56,
+                    23,
+                    7,
+                    2.4,
+                    0.7,
                     0.3,
                     0.1,
                     0.3,
-                    0.9,
-                    2.5,
-                    6,
-                    19,
-                    40
+                    0.7,
+                    2.4,
+                    7,
+                    23,
+                    56
                 ]
             }
         },
         "15": {
             "amount": 15,
             "low_risk": {
-                "bin_multipliers": [ 
+                "bin_multipliers": [
                     15,
                     9,
                     6,
@@ -162,7 +162,7 @@
                 ]
             },
             "medium_risk": {
-                "bin_multipliers": [ 
+                "bin_multipliers": [
                     42,
                     21,
                     10,
@@ -182,23 +182,23 @@
                 ]
             },
             "high_risk": {
-                "bin_multipliers": [ 
-                    145,
-                    53,
-                    20,
-                    7,
-                    2.8,
-                    1.1,
+                "bin_multipliers": [
+                    165,
+                    58,
+                    21,
+                    8,
+                    2.7,
+                    1,
                     0.3,
                     0.1,
                     0.1,
                     0.3,
-                    1.1,
-                    2.8,
-                    7,
-                    20,
-                    53,
-                    145
+                    1,
+                    2.7,
+                    8,
+                    21,
+                    58,
+                    165
                 ]
             }
         }
@@ -321,6 +321,7 @@ const PlinkoEvents = {
 
   AWAIT_PLAY: "AWAIT_PLAY", //Ожидание результата игры
   GAME_START: "GAME_START", //Инициирует начало игры с текущим state игрока
+  GAME_NEXT: "GAME_NEXT", //Следующая игра при автоставке
   CHIPS_LAUNCHED: "CHIPS_LAUNCHED", //Все шарики текущей игры были запущены, для работы автоставки
   CHIP_SCORED: "CHIP_SCORED", //Шарик упал в корзину, обновить UI истории игры 
   /*{
@@ -366,6 +367,11 @@ function initUI(cfg) {
   .addEventListener('click', () => {
     start_game()
     bus.emit(PlinkoEvents.BACKGROUND_UPDATE, {})
+  });
+
+  document.getElementById('skip')
+  .addEventListener('click', () => {
+    bus.emit(PlinkoEvents.GAME_SKIP, {})
   });
 
   // обработка каруселей выбора кол-ва шариков
@@ -427,7 +433,7 @@ function initUI(cfg) {
   });
 
   const stepSelect = dir => {
-    betValue.value = Math.round(Math.max((parseFloat(betValue.value || 0)) + parseInt(select.value) * dir, 0.1) * 10) / 10
+    betValue.value = betValue.value + (select.value * dir)
     bus.emit(PlinkoEvents.BET_UPDATE, betValue.value);
   };
 
@@ -493,10 +499,10 @@ function initUI(cfg) {
 function setPlayerState(cfg){
   window.tonROLL.PLINKO.saveState(
       {
-          score: 100000,
+          score: 1000,
           currency: "TON",
-          bet: 100,
-          bet_cost: 100,
+          bet: 1,
+          bet_cost: 1,
           autobet: 0,
           rows: Object.keys(cfg.rows)[0],
           chips: Object.values(cfg.chips)[0],
@@ -507,12 +513,12 @@ function setPlayerState(cfg){
 
   var state =  window.tonROLL.PLINKO.loadState()
 
-  document.getElementById('playerScoreValue').textContent = parseScore(state.score)
+  document.getElementById('playerScoreValue').textContent = state.score
   document.getElementById('chips_text').textContent = state.chips
   document.getElementById('rows_text').textContent = cfg.rows[state.rows].amount
-  document.getElementById("betValue").value = parseScore(state.bet)
-  document.getElementById("autoBet").value = parseScore(state.autobet)
-  document.getElementById("betCost").textContent = parseScore(state.bet_cost)
+  document.getElementById("betValue").value = state.bet
+  document.getElementById("autoBet").value = state.autobet
+  document.getElementById("betCost").textContent = state.bet_cost
   document.querySelectorAll('.currency').forEach(el => el.dataset.cur = 'ton');
 
   console.log("State saved")
@@ -524,7 +530,7 @@ function initGodotEvents(){
   window.tonROLL.PLINKO.on(PlinkoEvents.GODOT_READY, godotReady)
   window.tonROLL.PLINKO.on(PlinkoEvents.GAME_START, lockUI.bind(null, true))
   window.tonROLL.PLINKO.on(PlinkoEvents.GAME_END, lockUI.bind(null, false))
-  window.tonROLL.PLINKO.on(PlinkoEvents.CHIPS_LAUNCHED, onChipsLaunched)
+  window.tonROLL.PLINKO.on(PlinkoEvents.GAME_NEXT, onChipsLaunched)
 }
 
 //Старт игры
@@ -536,11 +542,12 @@ function start_game(){
   console.log(current_score)
   state.score = current_score
   state.autobet = current_autobet
-  document.getElementById('playerScoreValue').textContent = parseScore(current_score)
+  document.getElementById('playerScoreValue').textContent = current_score
   document.getElementById('autoBet').value = current_autobet
   bus.emit(PlinkoEvents.AUTO_BET_UPDATE, current_autobet);
   window.tonROLL.PLINKO.saveState(state)
-  window.tonROLL.PLINKO.emit(PlinkoEvents.GAME_START, play_game(state)) //TODO: вместо play_game(state) данные о игровой сессии полученные с сервера
+  bus.emit(PlinkoEvents.AWAIT_PLAY, {})
+  bus.emit(PlinkoEvents.GAME_START, play_game(state)) //TODO: вместо play_game(state) данные о игровой сессии полученные с сервера
 }
 
 //Обновить счет игрока при падении шарика в корзину
@@ -550,7 +557,7 @@ function updateScore(event_type, data) {
   var current_score = player_state.score
   current_score += chip_data.result
   player_state.score = current_score
-  document.getElementById('playerScoreValue').textContent = parseScore(current_score)
+  document.getElementById('playerScoreValue').textContent = current_score
   window.tonROLL.PLINKO.saveState(player_state)
 }
 
@@ -563,8 +570,10 @@ function updatePlayerState(event_type, data) {
 
   var state = JSON.parse(data)
 
-  document.getElementById("betValue").textContent = parseScore(state.bet)
-  document.getElementById("betCost").textContent = parseScore(state.bet_cost * state.chips)
+  
+
+  document.getElementById("betValue").textContent = state.bet
+  document.getElementById("betCost").textContent = state.bet_cost * state.chips
 
   window.tonROLL.PLINKO.saveState(state);
   console.log("State updated")
@@ -573,6 +582,8 @@ function updatePlayerState(event_type, data) {
 //Выключить/включить управление элементами интерфейса после старта игры
 function lockUI(is_locked, event_type, data){
   console.log("UI is locked: ", is_locked)
+  document.getElementById('startBtn').disabled = is_locked
+
   document.getElementById('rows').querySelectorAll('.prev, .next')
   .forEach(btn => btn.disabled = is_locked)
 
@@ -610,12 +621,13 @@ function play_game(client_data){
     var bonus_chips = new Array() //Бонусные шарики в зависимости от модификаторов(двойные корзины)
     for (let i = 0; i < player_data.chips; i++) {
         calculate_chip(chip_data, bonus_chips, player_data)
-        player_data.winnings += (parseInt(chip_data[i].chip_result) - chip_data[i].chip_cost)
+        player_data.winnings += (chip_data[i].chip_result - chip_data[i].chip_cost)
     }
     
     for (let i = 0; i < bonus_chips.length; i++){
-      player_data.winnings += parseInt(bonus_chips[i].chip_result)
+        player_data.winnings += bonus_chips[i].chip_result
     }
+
     game_data.chip_data = chip_data
     game_data.bonus_chips = bonus_chips
     game_data.winnings = player_data.winnings
