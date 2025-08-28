@@ -1,7 +1,3 @@
-const OPERATIONS = {
-	MULTIPLY: "MULTIPLY"
-}
-
 /* godotApi.js */
 (function initGateway () {
 
@@ -18,55 +14,8 @@ const OPERATIONS = {
 	  window.tonROLL = window.tonROLL || {};
 
 	  window.tonROLL = {
-		sendJson: async function (obj) {
-			try {
-				  const response = await fetch("http://localhost:3000/upload", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: obj
-				  });
-				 console.log(response); //
-				 let body = response.text(); // parse the response body
-				  console.log(body); //
-				 return body;
-			}
-			catch {
-				return null;
-			}
-		  },
-	
-		readConfig: async function() {
-			try {
-				  const response = await fetch("http://localhost:3000/config", {
-					method: "GET",
-					   headers: { "Content-Type": "application/json" },
-				  });
-				 let body = response.text(); // parse the response body
-				 return body;
-			}
-			catch {
-				return null;
-			}
-		},
-	
-		message: function(){
-			console.log("Message")
-		},
-
-		getImages: async function () {
-			try{
-				const res = await fetch("http://localhost:3000/img", { mode: 'cors' });
-				const mime = res.headers.get('content-type') || '';
-				const buf  = new Uint8Array(await res.arrayBuffer());
-				// 0 = ok, res.status и mime пойдут в Godot
-				console.log(res)
-				return (0, res.status, mime, buf);
-			}catch(e){
-				// 1 = ошибка
-				return (1, 0, '', new Uint8Array());
-			}
-		}
-	};
+  
+	  };
 
 	  if (!window.tonROLL.PLINKO) {
 		const handlers = Object.create(null);
@@ -76,41 +25,7 @@ const OPERATIONS = {
 			off (t, cb) { if (handlers[t]) handlers[t] = handlers[t].filter(f => f !== cb); },
 			emit(t, d)  {
 					(handlers[t] || []).forEach(cb => cb(t, d)); 
-			},
-			calc_decimal(method, nums) {
-				if (nums.length === 0) {
-				  throw new Error("Нужно передать хотя бы одно число");
-				}
-			  
-				// Преобразуем все входные числа в Decimal
-				let result = new Decimal(nums[0]);
-			  
-				for (let i = 1; i < nums.length; i++) {
-				  const n = new Decimal(nums[i]);
-			  
-				  switch (method) {
-					case "add":
-					  result = result.add(n);
-					  break;
-					case "sub":
-					  result = result.sub(n);
-					  break;
-					case "mul":
-					  result = result.mul(n);
-					  break;
-					case "div":
-					  result = result.div(n);
-					  break;
-					case "pow":
-					  result = result.pow(n);
-					  break;
-					default:
-					  throw new Error(`Неизвестная операция: ${method}`);
-				  }
-				}
-			  
-				return result.toString();
-			}
+				},
 		};
 		console.log('[godotApi] New Bus created');
 	  }
@@ -124,13 +39,6 @@ const OPERATIONS = {
 
 	window.tonROLL.PLINKO.saveState  = (obj) =>
 		localStorage.setItem("plinko", JSON.stringify(obj));
-
-	/* 3. Регистрируем Bus как интерфейс "godotApi" (если это сборка Web-Godot) */
-	(function waitGodot () {
-	  if (typeof godot !== 'undefined' && godot.register_interface) {
-		godot.register_interface('godotApi', window.tonROLL);
-		console.log('[godotApi] godotApi registered');
-	  } else { setTimeout(waitGodot, 50); }
-	})();
   
   })();
+
