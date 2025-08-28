@@ -374,6 +374,7 @@ function initUI(cfg) {
     bus.emit(PlinkoEvents.GAME_SKIP, {})
   });
 
+  
   // обработка каруселей выбора кол-ва шариков
   document.getElementById('chips').querySelectorAll('.prev, .next')
   .forEach(btn => btn.addEventListener('click', evt => {
