@@ -378,17 +378,17 @@ function initUI(cfg) {
   // обработка каруселей выбора кол-ва шариков
   document.getElementById('chips').querySelectorAll('.prev, .next')
   .forEach(btn => btn.addEventListener('click', evt => {
-    var _chips_key_arr = Object.keys(config.chips).filter(function(e) { return e !== 'default' })
+
     const id = evt.currentTarget.dataset.target;
     const dir = evt.currentTarget.classList.contains('next') ? 1 : -1;
     let v = values[id] + dir;
-    if (v < 0) v = _chips_key_arr.length - 1;
-    if (v >= _chips_key_arr.length) v = 0;
+    if (v < 0) v = 0;
+    if (v >= 20) v = 20;
     values[id] = v;
 
-    document.getElementById(id).textContent = config.chips[_chips_key_arr[v]];
-    console.log(`Значение ${id} изменено на ${config.chips[_chips_key_arr[v]]}`);
-    bus.emit(PlinkoEvents.CHIP_UPDATE, config.chips[_chips_key_arr[v]])
+    document.getElementById(id).textContent = v;
+    console.log(`Значение ${id} изменено на ${v}`);
+    bus.emit(PlinkoEvents.CHIP_UPDATE, v)
   }));
 
   // обработка каруселей выбора рядов
@@ -403,7 +403,7 @@ function initUI(cfg) {
     if (v >= _rows_key_arr.length) v = 0;
     values[id] = v;
 
-    document.getElementById(id).textContent = config.rows[_rows_key_arr[v]].amount;
+    document.getElementById(id).textContent = config.rows[_rows_key_arr[v]].count;
     console.log(`Значение ${id} изменено на ${_rows_key_arr[v]}`);
     bus.emit(PlinkoEvents.ROWS_UPDATE, _rows_key_arr[v])
   }));
@@ -420,28 +420,6 @@ function initUI(cfg) {
   autoBet.addEventListener('input', () => {
     console.log(autoBet.value)
     bus.emit(PlinkoEvents.AUTO_BET_UPDATE, autoBet.value);
-  });
-
-  const select = document.getElementById('betSelect');
-  const minus  = document.getElementById('betMinus');
-  const plus   = document.getElementById('betPlus');
-
-  config.bet_variants.forEach((optText) => {
-    const opt = document.createElement('option');
-    opt.value = parseInt(optText);
-    opt.textContent = optText;
-    select.appendChild(opt);
-  });
-
-  const stepSelect = dir => {
-    betValue.value = betValue.value + (select.value * dir)
-    bus.emit(PlinkoEvents.BET_UPDATE, betValue.value);
-  };
-
-  minus.addEventListener('click', () => stepSelect(-1));
-  plus.addEventListener('click',  () => stepSelect(+1));
-  select.addEventListener('change', () => {
-    console.log('[UI] QUICK BET (select) =', select.value);
   });
 
   //обработка флажков модификаторов
@@ -480,9 +458,9 @@ function initUI(cfg) {
   function nextLevel() {
     level = (level % 3) + 1; // 1→2→3→1...
     render();
-    console.log(Object.values(cfg.risk)[0])
-    bus.emit(PlinkoEvents.RISK_FACTOR_UPDATE, cfg.risk[level-1]);
-    console.log('Risk level:', level);
+    console.log(Object.keys(cfg.risk)[0])
+    bus.emit(PlinkoEvents.RISK_FACTOR_UPDATE, Object.keys(cfg.risk)[level-1]);
+    console.log('Risk level:', Object.keys(cfg.risk)[level-1]);
   }
 
   btn.addEventListener('click', nextLevel);
@@ -506,9 +484,9 @@ function setPlayerState(cfg){
           bet_cost: 1,
           autobet: 0,
           rows: Object.keys(cfg.rows)[0],
-          chips: Object.values(cfg.chips)[0],
+          chips: 1,
           modifiers: {},
-          risk: cfg.risk[0]
+          risk: Object.keys(cfg.risk)[0]
       }
   );
 
@@ -516,7 +494,7 @@ function setPlayerState(cfg){
 
   document.getElementById('playerScoreValue').textContent = state.score
   document.getElementById('chips_text').textContent = state.chips
-  document.getElementById('rows_text').textContent = cfg.rows[state.rows].amount
+  document.getElementById('rows_text').textContent = cfg.rows[state.rows].count
   document.getElementById("betValue").value = state.bet
   document.getElementById("autoBet").value = state.autobet
   document.getElementById("betCost").textContent = state.bet_cost
@@ -666,12 +644,12 @@ function calculate_chip(chip_arr, bonus_chips, player_data){
   var current_col = 1
 
   //Маршрут фишки
-  for (var i = 0; i < cfg.rows[player_data.rows].amount; i++) {
+  for (var i = 0; i < cfg.rows[player_data.rows].count; i++) {
     chip.way.push(current_col)
     var jump_side = Math.round(Math.random() * 10)%2
     current_col += jump_side
     //Если x2 зоны в игре и фишка пролетает через отверстие зоны
-    if (player_data.modifiers.zone != null && i != parseInt(cfg.rows[player_data.rows].amount))  {
+    if (player_data.modifiers.zone != null && i != parseInt(cfg.rows[player_data.rows].count))  {
       if (player_data.pin_tree[i][current_col-1] == 2){
         chip.multiplier.push(step_up(chip.multiplier.at(-1)))
       }
@@ -680,7 +658,7 @@ function calculate_chip(chip_arr, bonus_chips, player_data){
 
   chip.target_bin = current_col - 1
 
-  chip.chip_result = chip.chip_value * chip.multiplier[chip.multiplier.length-1] * cfg.rows[player_data.rows][player_data.risk].bin_multipliers[chip.target_bin]
+  chip.chip_result = chip.chip_value * chip.multiplier[chip.multiplier.length-1] * cfg.rows[player_data.rows][player_data.risk][chip.target_bin]
 
   chip_arr.push(chip)
 
