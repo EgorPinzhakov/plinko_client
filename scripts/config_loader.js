@@ -12,7 +12,7 @@ export async function loadConfig(url = "../config/game_config.json") {
 
 
 export function playerConfig(cfg){
-  var playerConfig = {}
+  /*var playerConfig = {}
   playerConfig.rows = {}
   playerConfig.modifiers = {}
   for (var key of Object.keys(cfg.rows)) {
@@ -48,6 +48,6 @@ export function playerConfig(cfg){
   playerConfig.modifiers.zone.positions = cfg.modifiers.zone.positions
 
   playerConfig.modifiers.double_chip.positions = cfg.modifiers.double_chip.positions
-
-  return playerConfig
+  */
+  return cfg
 }
